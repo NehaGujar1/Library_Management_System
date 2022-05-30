@@ -1,0 +1,73 @@
+
+<style>
+    body{
+    background-color:grey;
+    }
+    table{
+        align-content: center;
+    }
+    #admin_login{
+        margin-left: 30vw;
+        margin-right: 30vw;
+        margin-top: 5vh;
+        align-content: center;
+    }
+    p{
+        height: 3vh;
+    }
+</style>
+<div id="admin_login">
+<form id="admin_changes" method="post" action="/admin_login2">
+    Hello!
+<%= data %>
+<p></p>
+<table id="table2">
+    <caption><b><h1>Check-in list</h1></b></caption>
+    <thead>
+    <th>Name of book</th>
+    <th>Name</th>
+    <th>Check-box</th>
+    </thead>
+<tbody id="table"></tbody>
+</table>
+<p></p>
+<table id="table1">
+    <caption>Check-out list</caption>
+    <thead>
+    <th>Name of book</th>
+    <th>Name</th>
+    <th>Check-box</th>
+    </thead>
+<tbody id="table3"></tbody>
+</table>
+<p></p>
+<table id="table4">
+    <caption>All books list</caption>
+    <thead>
+    <th>Name of book</th>
+    <th>Name</th>
+    </thead>
+<tbody id="table5"></tbody>
+</table>
+<input type="text" name="add_new_book">
+<button type="button" name="add_books"></button>
+<button type="submit" id="admin_changes_submit"></button>
+</form>
+</div>
+<script>
+dat = <%- JSON.stringify(data2) %>;
+    const tbodyel = document.getElementById("table");
+    for(let i=0; dat[i]!=undefined; i++){
+        tbodyel.innerHTML += '<tr><td>'+dat[i].book_name+'</td><td>'+dat[i].name+'</td><td><input type = "checkbox" name="check_in" value="'+dat[i].book_name+',' +dat[i].name+ '"> </td></tr>';
+    }
+    dat2 = <%- JSON.stringify(data3) %>;
+    const tbodyel2 = document.getElementById("table3");
+    for(let i=0; dat2[i]!=undefined; i++){
+        tbodyel2.innerHTML += '<tr><td>'+dat2[i].book_name+'</td><td>'+dat2[i].name+'</td><td><input type = "checkbox" name="check_out" value="'+dat2[i].book_name+'"> </td></tr>';
+    }
+    dat3 = <%- JSON.stringify(data4) %>;
+    const tbodyel3 = document.getElementById("table5");
+    for(let i=0; dat3[i]!=undefined; i++){
+        tbodyel3.innerHTML += '<tr><td>'+dat3[i].book_name+'</td><td>'+dat3[i].name+'</td><td><input type = "checkbox" name="delete" value="'+dat3[i].book_name+'"> </td></tr>';
+    }
+</script>

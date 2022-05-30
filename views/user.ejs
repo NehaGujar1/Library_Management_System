@@ -1,0 +1,47 @@
+Hi, <%= data %>! 
+<br>
+<!-- <%= data2[0].book_name %> -->
+
+
+<form id="check_input" method="post" action="/user">
+    <!-- <input type="checkbox" id="check_out" name="check_out" value="check_out">  -->
+    <input type="text" id="ur_book_name" name="ur_book_name" value='<%= data %>' style="display:none ;">
+    <table id="table3">
+        <thead>
+        <th>Name of book</th>
+        <th>Check-box</th>
+        </thead>
+    <tbody id="tablet"></tbody>
+    </table>
+<table id="table2">
+    <thead>
+    <th>Name of book</th>
+    <th>Check-box</th>
+    </thead>
+<tbody id="table"></tbody>
+</table>
+<button type="submit" id="submit_check_in_out">
+</form>
+
+<style>
+    button{
+        width: auto;
+        height: auto;
+    }
+</style>
+<script>
+    ur_book = <%- JSON.stringify(data) %>;
+     const ur_book_1 = document.getElementById("ur_book_name");
+     ur_book_1.innerHTML = ' <style> display:none; </style> '
+    // console.log(data2);
+    dat = <%- JSON.stringify(data3) %>;
+    const tbodyel = document.getElementById("table");
+    for(let i=0; dat[i]!=undefined; i++){
+        tbodyel.innerHTML += '<tr><td>'+dat[i].book_name+'</td><td><input type = "radio" name="check_in" value="'+dat[i].book_name+'"> </td></tr>';
+    }
+    dat2 = <%- JSON.stringify(data2) %>;
+    const tbodyel2 = document.getElementById("tablet");
+    for(let i=0; dat2[i]!=undefined; i++){
+        tbodyel2.innerHTML += '<tr><td>'+dat2[i].book_name+'</td><td><input type = "radio" name="check_out" value="'+dat2[i].book_name+'"> </td></tr>';
+    }
+</script>
