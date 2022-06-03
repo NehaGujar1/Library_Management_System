@@ -1,71 +1,134 @@
 
 <style>
     body{
-    background-color:grey;
+    background-color:black;
+    color: white;
     }
     table{
         align-content: center;
+        align-items: center;
+        border: 1px solid;
+        margin-left:auto;
+        margin-right:auto;
     }
     #admin_login{
-        margin-left: 30vw;
+        /* margin-left: 30vw;
         margin-right: 30vw;
-        margin-top: 5vh;
+        margin-top: 5vh; */
+        display: grid;
+        margin-left: auto;
+        margin-right: auto;
+        justify-items: center;
+        align-content: center;
+        height: 100%;
+    }
+    span{
+        display: flex;
+        margin-left: auto;
+        margin-right: auto;
+        justify-content: center;
+        align-items: center;
+        grid-column-gap: 1vw;
+    }
+    #bn3{
+        display: grid;
+        margin-top: auto;
+        margin-left: auto;
+        margin-right: auto;
+        justify-items: center;
         align-content: center;
     }
     p{
         height: 3vh;
     }
+    /* #last_part{
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        justify-items: center;
+        align-content: center;
+    } */
+    #table4{
+        display: grid;
+    }
 </style>
+
 <div id="admin_login">
 <form id="admin_changes" method="post" action="/admin_login2">
-    Hello!
-<%= data %>
+    <h1 style="text-align:center;">Welcome to admin page</h1>
 <p></p>
-<table id="table2">
-    <caption><b><h1>Check-in list</h1></b></caption>
+<div id="table2">
+<table >
+    <caption><b>Check-in list</b></caption>
     <thead>
     <th>Name of book</th>
     <th>Name</th>
-    <th>Check-box</th>
+    <!-- <th>Check-box</th> -->
     </thead>
 <tbody id="table"></tbody>
 </table>
+<div id="bn1"><button name="check-in">Submit check-in</button></div>
+</div>
 <p></p>
-<table id="table1">
-    <caption>Check-out list</caption>
+<div  id="table1">
+<table>
+    <caption><b>Check-out list</b></caption>
     <thead>
     <th>Name of book</th>
     <th>Name</th>
-    <th>Check-box</th>
+    <!-- <th>Check-box</th> -->
     </thead>
 <tbody id="table3"></tbody>
 </table>
+<div id="bn2"><button type="submit" name="check-out">Submit check-out</button></div></div>
 <p></p>
-<table id="table4">
-    <caption>All books list</caption>
+<div  id="table4">
+<table>
+    <caption><b>All books list</b></caption>
     <thead>
     <th>Name of book</th>
     <th>Name</th>
     </thead>
 <tbody id="table5"></tbody>
 </table>
-<input type="text" name="add_new_book">
-<button type="button" name="add_books"></button>
-<button type="submit" id="admin_changes_submit"></button>
+<div id="bn3"><button type="submit" name="book_changes" style="align-items: center;">Delete</button></div></div>
+<p></p>
+<span>
+<input type="text" name="add_new_book" placeholder="Book name">
+<input type="text" name="add_author" placeholder="Author">
+<button type="submit" name="add_books">Add</button>
+<button type="submit" id="admin_changes_submit">Submit</button></span>
 </form>
 </div>
 <script>
 dat = <%- JSON.stringify(data2) %>;
     const tbodyel = document.getElementById("table");
+    console.log(dat);
+    if(dat[0]!=undefined){
     for(let i=0; dat[i]!=undefined; i++){
         tbodyel.innerHTML += '<tr><td>'+dat[i].book_name+'</td><td>'+dat[i].name+'</td><td><input type = "checkbox" name="check_in" value="'+dat[i].book_name+',' +dat[i].name+ '"> </td></tr>';
     }
+    }
+    else{
+        const table = document.getElementById("table2");
+        table.innerHTML = ' <style> display:none; </style> '
+        table.innerHTML = '<p style = "text-align:center">No check-in requests pending</p>'
+    }
     dat2 = <%- JSON.stringify(data3) %>;
+    console.log(dat2);
     const tbodyel2 = document.getElementById("table3");
+    if(dat2[0]!=undefined){
     for(let i=0; dat2[i]!=undefined; i++){
         tbodyel2.innerHTML += '<tr><td>'+dat2[i].book_name+'</td><td>'+dat2[i].name+'</td><td><input type = "checkbox" name="check_out" value="'+dat2[i].book_name+'"> </td></tr>';
     }
+}
+    else{
+        const tablej = document.getElementById("table1");
+        tablej.innerHTML = '<style> display:none; </style>'
+        tablej.innerHTML = '<p style = "text-align:center">No check-out requests pending</p>'
+    }
     dat3 = <%- JSON.stringify(data4) %>;
+    console.log(dat3);
     const tbodyel3 = document.getElementById("table5");
     for(let i=0; dat3[i]!=undefined; i++){
         tbodyel3.innerHTML += '<tr><td>'+dat3[i].book_name+'</td><td>'+dat3[i].name+'</td><td><input type = "checkbox" name="delete" value="'+dat3[i].book_name+'"> </td></tr>';

@@ -38,61 +38,58 @@
         h2{
             height: 30vh;
         }
-        #i1{
-            grid-column: 1/2;
-            grid-row: 1/2;
-            width: 30%;
-            margin: 0vh 0vw 0vh 32vw ;
-            border-radius: 1vw;
-            border-color: #222222;
-            background-color: rgba(175, 175, 175, 0.7);
-    
-        }
-        #i2{
-            grid-column: 2/2;
-            grid-row: 1/2;
-            width: 30%;
-            margin: 0vh 32vw 0vh 0vw;
-            border-radius: 1vw;
-            border-color: #222222;
-            background-color: rgba(175, 175, 175, 0.7);
-    
-        }
-        #i3{
-            grid-column: 1/2;
-            grid-row: 2/2;
-            width: 30%;
-            margin: 0vh 0vw 0vh 32vw ;
-            border-radius: 1vw;
-            border-color: #222222;
-            background-color: rgba(175, 175, 175, 0.7);
-    
-        }
-        #i4{
-            grid-column: 2/2;
-            grid-row: 2/2;
-            width: 30%;
-            margin: 0vh 32vw 0vh 0vw;
-            border-radius: 1vw;
-            border-color: #222222;
-            background-color: rgba(175, 175, 175, 0.7);
-    
-        }
+        
     </style>
     <title>My library</title>
 </head>
 <body>
     <h2></h2>
-    <h1 style="text-align: center;">Welcome to my library</h1>
+    
+    <h1 style="text-align: center;"></h1>
     <pre> </pre>
-    <form action="/choose" method="POST" id="initial_page"></form>
+    
+    <form action="/post_userlogin" method="POST" id="initial_page">
     <div class="b">
-        <input type="button" onclick="location.href='/client_login';" value="client_login" id="i1"/>
-        <input type="button" onclick="location.href='/register';" value="register" id="i2"/>
-        <input type="button" onclick="location.href='/admin_login';" value="admin_login" id="i3"/>
-        <input type="button" onclick="location.href='/admin_registration';" value="admin_registration" id="i4"/>
+        <p id="3">Choices to check-in</p>
+        <table id="table7">
+  
+         <thead>
+        <th>Name of book</th>
+    <!-- <th>Check-box</th> -->
+        </thead>
+        <tbody id="table6"></tbody>
+        </table>
+        <input type="submit" value="post_userlogin" />
+        <%= data %>
     </div>
     </form>
    
 </body>
+<script>
+    // dat2
+    // const t1 = getElementbyId('p1');
+    // t1.innerHTML = dat2;
+    // t1.innerHTML = '<style>display: none;</style>';
+    // dat3 
+    // const t2 = getElementbyId('p2');
+    // t2.innerHTML = dat3;
+    // t2.innerHTML = '<style>display: none;</style>';
+    dat = <%- JSON.stringify(data) %>;
+    dat3 = <%- JSON.stringify(data2) %>;
+    console.log('hello');
+    const tbodyel3 = document.getElementById("table6");
+    const tablel = document.getElementById("table7");
+    const h4 = document.getElementById("3");
+if(dat3[0]==undefined)  {
+    tablel.innerHTML = '<style> display: none; </style>';
+    h4.style = '<style> display: none; </style>';
+    h4.innerHTML = '<p>No books to check-in</p>'
+}
+    else
+    {
+    for(let i=0; dat3[i]!=undefined; i++){
+        tbodyel3.innerHTML += '<tr><td>'+dat3[i].book_name+'</td><input type = "checkbox" name="check_in" value="'+dat3[i].book_name+'"> </td></tr>';
+    }
+}
+</script>
 </html>

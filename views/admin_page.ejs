@@ -79,18 +79,18 @@
     
         }
     </style>
-    <title>My library</title>
+    <title>Admin page</title>
 </head>
 <body>
     <h2></h2>
-    <h1 style="text-align: center;">Welcome to my library</h1>
+    <h1 style="text-align: center;">Which operation would you like to perform?</h1>
     <pre> </pre>
-    <form action="/choose" method="POST" id="initial_page"></form>
+    <form action="/admin_page" method="POST" id="initial_page"></form>
     <div class="b">
-        <input type="button" onclick="location.href='/client_login';" value="client_login" id="i1"/>
-        <input type="button" onclick="location.href='/register';" value="register" id="i2"/>
-        <input type="button" onclick="location.href='/admin_login';" value="admin_login" id="i3"/>
-        <input type="button" onclick="location.href='/admin_registration';" value="admin_registration" id="i4"/>
+        <input type="button" onclick="location.href='/add_books';" value="add_books" id="i1"/>
+        <input type="button" onclick="location.href='/delete_books';" value="delete_books" id="i2"/>
+        <input type="button" onclick="location.href='/check_in_approval';" value="check_in_approval" id="i3"/>
+        <input type="button" onclick="location.href='/admin_registration_approval';" value="admin_registration_approval" id="i4"/>
     </div>
     </form>
    

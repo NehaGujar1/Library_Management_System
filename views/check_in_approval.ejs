@@ -1,0 +1,39 @@
+<html>
+    <form action="/check_in_approval" method="post">
+    <div  id="tabless">
+        <table id="table4">
+            <caption><b>Check-in list:</b></caption>
+            <thead>
+            <th>isbn</th>
+            <th></th>
+            </thead>
+        <tbody id="table5"></tbody>
+        </table>
+        <div id="bn3"><button type="submit" name="check_in_approval"  style="align-items: center;">Approve</button></div></div>
+        <p></p>
+        <!-- <span>
+        <input type="text" name="add_new_book" placeholder="Book name">
+        <input type="text" name="add_author" placeholder="Author">
+        <input type="number" name="add_qty" placeholder= 0 >
+        <button type="submit" name="add_books">Add</button>
+        <button type="submit" id="admin_changes_submit">Submit</button>
+    </span> -->
+        </form>
+        </div>
+    </body>
+    <script>
+        dat2 = <%- JSON.stringify(data3) %>;
+    console.log(dat2);
+    const tbodyel2 = document.getElementById("table5");
+    if(dat2[0]!=undefined){
+    for(let i=0; dat2[i]!=undefined; i++){
+        tbodyel2.innerHTML += '<tr><td>'+dat2[i].isbn+'</td><td>'+dat2[i].name+'</td><td><input type = "checkbox" name="check_in_approval" value="'+dat2[i].name+','+dat2[i].isbn+'"> </td></tr>';
+    }
+}
+    else{
+        const tablej = document.getElementById("table4");
+        tablej.innerHTML = '<style> display:none; </style>'
+        tablej.innerHTML = '<p style = "text-align:center">No books to display</p>'
+    }
+    </script>
+</html>
