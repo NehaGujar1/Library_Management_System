@@ -6,13 +6,15 @@ const sessions = require("express-session");
 const db = require('./database');
 const { nextTick } = require('process');
 const res = require('express/lib/response');
+const req = require('express/lib/request');
 db.connect();
+require('dotenv').config();
 const app = express();
 app.set('view engine', 'ejs');
 
 const oneDay =1000* 60* 60;
 app.use(sessions({
-    secret:"ewifheufhreuijfwoeidjeiufnreiufneiurfwaeiuherw",
+    secret:process.env.secret,
     saveUninitialized: true,
     cookie:{maxAge:oneDay},
     resave:false
@@ -45,6 +47,7 @@ router.get('/done',(req,res) => {
     res.render('done');
 })
 router.post('/done',(req,res) => {
+    req.session.destroy;
     res.render('index');
 })
 //This have 2 arguments a route and a function with three arguments, request, response and next.
@@ -103,24 +106,51 @@ router.post('/client_login', (req, res) => {
 // router.post('/user_choices',(req,res) => {
 //     req.session.uname;
 // });
-router.get('/post_userlogin',(req,res) => {
+router.get('/Check_in',(req,res) => {
     let name = req.session.uname;
-        db.query("select books.book_name from books left join books_user books_user.isbn = books.isbn where books_user.isbn =;",
-(error, result2, field) => {
-            console.log(name);
-            console.log(result2);
-            res.render('post_userlogin',{data:name, data2:result2});
-        })
+//         db.query("select books.* from books left join books_user books_user.isbn = books.isbn where books_user.isbn is null and name is not "+db.escape(name)+";",
+// (error, result2, field) => {
+//             const arr = [];
+            // for(i=0;i<result2.length;i++){
+            //     db.query("select * from requests where isbn = "+db.escape(result2[i].isbn)+";",(error, result3, field) => {
+            //         if(result3==undefined){
+            //             arr.push(result3[0].isbn);
+                        
+            //         }
+            //     }
+            //         )
+            // }
+            db.query("select books.* from books left join books_user on books_user.isbn = books.isbn and books_user.name =" + db.escape(req.session.uname) + " where books_user.isbn is null and books.qty_left >0;", (error2, result2, field) => {
+                if (error2) {
+                    console.log(error2)
+                    res.render("done",{data:'error'})
+                } else {
+                    db.query("select books.* from books left join books_user on books_user.isbn = books.isbn and books_user.name =" + db.escape(req.session.uname) + " where books_user.isbn is null;", (error3, result3, field) => {
+                        if (error3) {
+                            console.log(error3)
+                            res.render("done",{data:'error'})
+                        } else {
+                            console.log(result2);
+                          res.render("Check_in", { data: req.session.uname, data2: result2 });
+                        }
+                    })
+                }
+            })
+
+            // console.log(name);
+            // console.log(result2);
+            // res.render('Check_in',{data:name, data2:result2});
+        // })
     })
-router.get('/post_userlogin2',(req,res) => {
+router.get('/Check_out',(req,res) => {
     let name = req.session.uname;
     db.query("select books.book_name from books inner join books_user on books.isbn = books_user.isbn where name = " + db.escape(name) + ";",(error, result2, field) => {
             console.log(name);
             console.log(result2);
-            res.render('post_userlogin2',{data:name, data2:result2});
+            res.render('Check_out',{data:name, data2:result2});
         })
 } );
-router.post('/post_userlogin',(req,res) => {
+router.post('/Check_in',(req,res) => {
     let name = req.session.uname;
     let book_issued  = req.body.check_in;
     if(book_issued!=null){
@@ -130,6 +160,9 @@ router.post('/post_userlogin',(req,res) => {
                         let k = result[0].isbn;
             db.query("insert into requests values (" + db.escape(k) + ", " + db.escape(name) + ");",
                 (error, result2, field) => {
+                    db.query("select * from books where isbn = " + db.escape(k) + ";",(error, result2, field) => {
+                        db.query("update books set qty_left = qty_left -1 where isbn = " + db.escape(k) + ";");   
+                    })
                 });
             });
             }
@@ -149,7 +182,7 @@ router.post('/post_userlogin',(req,res) => {
         res.render('done',{data:'Doneeeeeeee'});
     });
 //
-router.post('/post_userlogin2',(req,res) => {
+router.post('/Check_out',(req,res) => {
         let name = req.session.uname;
         let check_o_book  = req.body.check_out;
         if(check_o_book!=null){
@@ -161,9 +194,7 @@ db.query("delete from books_user where isbn = " + db.escape(k) + " and name = " 
     (error, result2, field) => {
     })
 db.query("select * from books where isbn = " + db.escape(k) + ";",(error,result3,field) => {
-    let p = result3[0].qty;
-    p = p+1;
-    db.query("update books set qty = " + db.escape(p) + " where isbn = " + db.escape(k) + ";",(error,result4,field) => { 
+    db.query("update books set qty_left = qty_left +1 where isbn = " + db.escape(k) + ";",(error,result4,field) => { 
     });
 });
 })
@@ -220,7 +251,7 @@ router.post('/register', (req, res) => {
                     db.query("select books.book_name from books where isbn not in (select isbn from books_user where name = " + db.escape(name) + " and books.qty>0);",(error, result2, field) => {
                     console.log(name);
                     console.log(result2);
-                    res.render('post_userlogin',{data:name, data2:result2});
+                    res.render('Check_in',{data:name, data2:result2});
                      })
                     });
                 }
@@ -376,12 +407,26 @@ router.get('/add_books',(req,res) => {
 router.post('/add_books',(req,res) => {
     let book_added = req.body.add_new_book;
     let author_name = req.body.add_author;
+    db.query("select * from books where book_name = "+db.escape(book_added)+" and author = "+db.escape(book_added)+";",(error,result,field) => {
+    if(result[0]==undefined){
+   
     let qty = req.body.add_qty;
     const isbn = new Date();
     let isbn_val = isbn.getTime();
     console.log(isbn_val);
     db.query("insert into books values("+db.escape(isbn_val)+","+db.escape(book_added)+","+db.escape(author_name)+","+db.escape(qty)+","+db.escape(qty)+");",)
     res.render('done',{data:'Donee'})
+    }
+    else {
+        let qty = req.body.add_qty;
+        let quantity = Number(result[0].qty) + Number(qty);
+        let quantity_left = Number(result[0].qty_left) + Number(qty);
+        db.query("update books set qty = "+db.escape(quantity)+" where book_name= "+db.escape(book_added)+";")
+        db.query("update books set qty_left = "+db.escape(quantity_left)+" where book_name= "+db.escape(book_added)+";")
+        console.log(result);
+    }
+    res.render('done',{data:'Added!'})
+})
 });
 router.get('/delete_books',(req,res) => {
     db.query("select * from books;",(error,result,field) => {
@@ -414,13 +459,13 @@ else {
 } }
 res.render('done',{data:'Deleted'});
 });
-res.get('/check_in_approval',(req,res) => {
+router.get('/check_in_approval',(req,res) => {
     db.query("select * from requests;",(error,result,field) => {
     res.render('check_in_approval',{data3:result})
     });
 });
-res.post('/check_in_approval',(req,res) => {
-    let approval = req.body,check_in_approval;
+router.post('/check_in_approval',(req,res) => {
+    let approval = req.body.check_in_approval;
     if(approval!==undefined){
                 if(typeof approval == "object"){
             for(let i=0; i<approval.length;i++){
@@ -430,10 +475,10 @@ res.post('/check_in_approval',(req,res) => {
                 console.log(k);
                 console.log(k[0]);
                 console.log(k[1]);
-                 db.query("delete from requests where book_name = '" +k[0]+ "','" +k[1]+ "';");
-                 console.log("delete from requests where book_name = '" +k[0]+ "';")
-                 db.query("insert into books_user where book_name = '" +k[0]+ "','" +k[1]+ "';");
-                 console.log("update books set name='"+k[1]+"' where book_name = '" +k[0]+ "';");
+                 db.query("delete from requests where isbn = " +db.escape(k[1])+ " and name = " +db.escape(k[0])+ ";");
+                 console.log("delete from requests where book_name = " +db.escape(k[0])+ ";")
+                 db.query("insert into books_user values(" +db.escape(k[1])+ "," +db.escape(k[0])+ ");");
+                 console.log("update books set name="+db.escape(k[1])+" where book_name = " +k[0]+ ";");
                         console.log('Checked-in');}}
          else{
             var uname = approval;
@@ -442,13 +487,33 @@ res.post('/check_in_approval',(req,res) => {
             console.log(k);
             console.log(k[0]);
             console.log(k[1]);
-             db.query("delete from requests where book_name = '" +k[0]+ "','" +k[1]+ "';");
-             console.log("delete from requests where book_name = '" +k[0]+ "';")
-             db.query("insert into books_user where book_name = '" +k[0]+ "','" +k[1]+ "';");
-             console.log("update books set name='"+k[1]+"' where book_name = '" +k[0]+ "';");
-            console.log('Checked-in');}
+            db.query("delete from requests where isbn = " +k[1]+ " and name = '" +k[0]+ "';");
+            console.log("delete from requests where book_name = '" +k[0]+ "';")
+            db.query("insert into books_user values(" +k[1]+ "," +k[0]+ ");");
+            console.log("update books set name='"+k[1]+"' where book_name = '" +k[0]+ "';");
+                   console.log('Checked-in');}
          }
+         res.render('done',{data:'Completed check-in requests'});
         });
+        router.get('/check_pending_requests',(req,res) => {
+            let name = req.session.uname;
+            db.query("select books.book_name from books where isbn not in (select isbn from books_user where name = " + db.escape(name) + ");",(error, result2, field) => {
+                console.log(result2);
+                db.query("select books.book_name from books inner join books_user on books.isbn = books_user.isbn where name = " + db.escape(name) + ";",(error, result3, field) => {
+                   db.query("select books.book_name from books inner join requests on books.isbn = requests.isbn where name = " + db.escape(name) + ";",(error, result4, field) => {
+                   let a = "Logged in";
+                   console.log(result4);
+                   //res.send('Passwords didn't match');
+                   return res.render('check_pending_requests',{data: a, data2: result2, data3: result3, data4: result4});
+                });
+                
+               }); 
+            
+        })
+    })
+    router.post('/check_pending_requests',(req,res) => {
+        res.render('done',{data:"Done"});
+    })
         //     var uname = book_issued;
         //         let k = uname.split(',');
         //         db.query("delete from requests where book_name = '" +k[0]+ "';");
